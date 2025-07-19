@@ -1,0 +1,16 @@
+// Reset CSS
+@import './lib/reset.css';
+
+// Bootstrap CSS
+@import 'bootstrap/dist/css/bootstrap.css';
+@import 'bootstrap-vue-3/dist/bootstrap-vue-3.css';
+
+// Bootstrap Icons
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Custom styles
+@import './common.scss';
+@import './modules/form.scss';
+
+
+
