@@ -1,54 +1,31 @@
 <template>
     <div class="form__item">
-        <BFormInput 
-            type="text" 
-            v-model="formData.metka" 
-            placeholder="Метки (через ;)"
-            maxlength="100"
-            class="form__item--input"
-            :class="{ 'is-invalid': errors.metka }"
-            @blur="validateMetka"
-            @input="validateMetka"
-        />
-        <BFormSelect 
-            :options="options" 
-            value-field="type" 
-            text-field="name" 
-            v-model="formData.type"
-            class="form__item--input" 
-            :class="{ 'is-invalid': errors.type }"
-            @update:model-value="validateType"
-            @input="validateType"
-        />
-                <BFormInput
-        type="text"
-        v-model="formData.login"
-        placeholder="Логин"
-        maxlength="100"
-        class="form__item--input"
-        :class="[{ 'is-invalid': errors.login }]"
-        :style="{ gridColumn: formData.type === 'local' ? '3' : '3 / 5' }"
-        @blur="validateLogin"
-        @input="validateLogin"
-        />
-                <BFormInput 
-        v-if="formData.type === 'local'" 
-        type="password" 
-        v-model="formData.password" 
-        placeholder="Пароль"
-        maxlength="100"
-        class="form__item--input"
-        :class="{ 'is-invalid': errors.password }"
-        style="grid-column: 4"
-        @blur="validatePassword"
-        @input="validatePassword"
-        />
-        <BButton
-            variant="outline-danger" 
-            size="sm" 
-            @click="removeAccount"
-            title="Удалить аккаунт"
-        >
+        <BFormInput type="text" v-model="formData.metka" placeholder="Метки (через ;)" maxlength="100"
+            class="form__item--input" :class="{ 'is-invalid': errors.metka }" @blur="validateMetka"
+            @input="validateMetka" />
+        <BFormSelect :options="options" value-field="type" text-field="name" v-model="formData.type"
+            class="form__item--input" :class="{ 'is-invalid': errors.type }" @update:model-value="validateType"
+            @input="validateType" />
+        <BFormInput type="text" v-model="formData.login" placeholder="Логин" maxlength="100" class="form__item--input"
+            :class="[{ 'is-invalid': errors.login }]" :style="{ gridColumn: formData.type === 'local' ? '3' : '3 / 5' }"
+            @blur="validateLogin" @input="validateLogin" />
+        <div v-if="formData.type === 'local'" class="form__item--input position-relative">
+            <BFormInput 
+                :type="showPassword ? 'text' : 'password'"
+                v-model="formData.password" 
+                placeholder="Пароль"
+                maxlength="100" 
+                class="pe-4"
+                :class="{ 'is-invalid': errors.password }"
+                style="grid-column: 4"
+                @blur="validatePassword" 
+                @input="validatePassword"
+            />
+            <button v-if="!errors.password" type="button" class="btn btn-link p-0 position-absolute end-0 top-50 translate-middle-y p-1" @click="showPassword = !showPassword" tabindex="-1">
+                <i :class="[showPassword ? 'bi bi-eye-slash text-primary' : 'bi bi-eye text-secondary']"></i>
+            </button>
+        </div>
+        <BButton variant="outline-danger" size="sm" @click="removeAccount" title="Удалить аккаунт">
             <i class="bi bi-trash"></i>
         </BButton>
     </div>
@@ -104,6 +81,8 @@ const options: SelectOption[] = [
     { type: 'local', name: 'Локальная' }
 ]
 
+const showPassword = ref(false)
+
 const parseMetka = (metkaString: string): MetkaItem[] => {
     if (!metkaString.trim()) return []
     return metkaString.split(';').map(item => ({ text: item.trim() })).filter(item => item.text)
@@ -113,23 +92,23 @@ const validateMetka = (): void => {
     // Метка необязательна, но если заполнена - проверяем длину
     const metkaValue = formData.value.metka.trim()
     errors.value.metka = metkaValue.length > 50
-    
+
     if (!errors.value.metka) {
         saveAccount()
     }
 }
 
-const validateType = (): void => {        
+const validateType = (): void => {
     errors.value.type = !formData.value.type;
-    
+
     // Если выбран LDAP, очищаем пароль
     if (formData.value.type === 'LDAP') {
         formData.value.password = null
     }
-    
+
     // Валидируем пароль сразу после изменения типа
     validatePassword()
-    
+
     if (!errors.value.type) {
         saveAccount()
     }
@@ -160,10 +139,10 @@ const validatePassword = (): void => {
 }
 
 const saveAccount = (): void => {
-    const isFormValid = !errors.value.type && !errors.value.login && 
-                       (formData.value.type !== 'local' || !errors.value.password);
-                       
-    
+    const isFormValid = !errors.value.type && !errors.value.login &&
+        (formData.value.type !== 'local' || !errors.value.password);
+
+
     if (isFormValid) {
         const updatedAccount: Partial<Account> = {
             metka: parseMetka(formData.value.metka),
@@ -171,7 +150,7 @@ const saveAccount = (): void => {
             login: formData.value.login.trim(),
             password: formData.value.type === 'LDAP' ? null : formData.value.password?.trim() || null
         }
-        
+
         accountsStore.updateAccount(props.account.id, updatedAccount);
         accountsStore.saveAccounts();
     }
@@ -191,7 +170,7 @@ const isAccountValid = computed(() => {
     const account = props.account
     const loginValid = account.login.trim() !== '' && account.login.length <= 100
     const passwordValid = account.type !== 'local' || (account.password && account.password.trim() !== '' && account.password.length <= 100)
-    
+
     return loginValid && passwordValid
 })
 

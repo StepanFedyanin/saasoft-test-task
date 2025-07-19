@@ -7,18 +7,20 @@
                 {{ canAddAccount ? 'Добавить аккаунт' : 'Заполните все аккаунты' }}
             </BButton>
         </div>
-        <div class="form__hint h5">
+        <div class="form__hint h6">
             <i class="bi bi-info-circle me-1"></i>
             Для указания меток для одной пары логин/пароль используйте разделитель ;
         </div>
         <form class="form__content">
-            <div class="form__labels">
+            <div class="form__content-inner">
+                <div class="form__labels">
                 <p class="form__label">Метки</p>
                 <p class="form__label">Тип значения *</p>
                 <p class="form__label">Логин *</p>
                 <p class="form__label">Пароль (если есть)*</p>
             </div>
             <AccountFormItem v-for="account in accountsStore.accounts" :key="account.id" :account="account" />
+            </div>
         </form>
     </div>
 </template>

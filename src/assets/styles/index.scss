@@ -1,3 +1,6 @@
+// Custom styles
+@use './common.scss';
+@use './modules/form.scss';
 // Reset CSS
 @import './lib/reset.css';
 
@@ -8,9 +11,7 @@
 // Bootstrap Icons
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
-// Custom styles
-@import './common.scss';
-@import './modules/form.scss';
+
 
 
 
